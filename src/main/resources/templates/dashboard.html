@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>SILGIS | Future Smart Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
+
+<style>
+	.analytics{
+	margin-top:40px;
+	background:rgba(255,255,255,.12);
+	backdrop-filter:blur(22px);
+	padding:30px;
+	border-radius:26px;
+	box-shadow:0 30px 80px rgba(0,0,0,.6);
+	}
+
+	#lab3d{
+	height:300px;
+	}
+
+	#map{
+	height:300px;
+	border-radius:12px;
+	}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Inter',sans-serif;
+}
+
+/* ===== STATIC BACKGROUND EXACT LIKE IMAGE ===== */
+body{
+  background:
+    radial-gradient(circle at 35% 40%, rgba(37,99,235,0.25), transparent 40%),
+    radial-gradient(circle at 70% 60%, rgba(16,185,129,0.15), transparent 45%),
+    linear-gradient(90deg,#030b1f 0%, #06142e 40%, #030b1f 100%);
+  color:#e5e7eb;
+}
+/* ===== END BACKGROUND ===== */
+
+/* ================= COLLEGE HEADER ================= */
+.college-header{
+  position:sticky;
+  top:0;
+  z-index:999;
+  background:#ffffffcc;
+  backdrop-filter:blur(12px);
+  padding:14px 40px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+  animation:fadeDown .8s ease forwards;
+}
+
+.college-center{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:20px;
+  width:100%;
+  text-align:center;
+}
+
+.college-header::after{
+  content:'';
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:100%;
+  height:4px;
+  background:linear-gradient(90deg,#22c55e,#3b82f6,#8b5cf6,#22c55e);
+  animation:flow 6s linear infinite;
+}
+
+.college-header::before{
+  content:'';
+  position:absolute;
+  bottom:-60px;
+  left:50%;
+  transform:translateX(-50%);
+  width:80%;
+  height:120px;
+  background:linear-gradient(90deg,#22c55e,#3b82f6,#8b5cf6);
+  filter:blur(80px);
+  opacity:.35;
+}
+
+@keyframes flow{
+  0%{filter:hue-rotate(0deg)}
+  100%{filter:hue-rotate(360deg)}
+}
+
+@keyframes fadeDown{
+  from{opacity:0; transform:translateY(-25px)}
+  to{opacity:1; transform:translateY(0)}
+}
+
+.college-header img{
+  width:120px;
+  filter:drop-shadow(0 0 12px rgba(34,197,94,.6));
+  animation:pulse 3s infinite;
+}
+
+@keyframes pulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.05)}
+}
+
+.header-text h1{
+    font-size: 36px;
+    font-weight: 800;
+    text-transform: uppercase;
+    background: linear-gradient(90deg,#0b4f1f,#138a36,#0b4f1f);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow:
+        0px 2px 4px rgba(0, 0, 0, 0.25),
+        0px 4px 12px rgba(19, 138, 54, 0.25);
+    letter-spacing: 1.2px;
+    margin: 6px 0;
+}
+
+.header-text h2{
+    font-size: 18px;
+    font-weight: 600;
+    color: #0d2a4a;
+}
+
+.header-text p{
+    font-size: 14px;
+    color: #1f2937;
+}
+
+@media(max-width:768px){
+  .college-center{flex-direction:column;}
+  .college-header img{ width:70px; }
+  .header-text h1{ font-size:22px; }
+}
+
+.wrapper{ display:flex; }
+
+.sidebar{
+  width:260px;
+  min-height:100vh;
+  background:linear-gradient(180deg,#020617,#020617,#0f172a);
+  padding:25px;
+  box-shadow:inset -1px 0 0 rgba(255,255,255,.08);
+}
+
+.sidebar h2{
+  text-align:center;
+  margin-bottom:35px;
+  letter-spacing:2px;
+}
+
+.sidebar a{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px;
+  margin-bottom:8px;
+  border-radius:12px;
+  color:#cbd5e1;
+  text-decoration:none;
+  transition:.35s;
+  position:relative;
+}
+
+.sidebar a::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,#22c55e,#3b82f6,#8b5cf6);
+  opacity:0;
+  border-radius:12px;
+  z-index:-1;
+}
+
+.sidebar a:hover::before{ opacity:1; }
+.sidebar a:hover{
+  color:white;
+  transform:translateX(8px);
+}
+
+.main{ flex:1; padding:35px; }
+
+.top-bar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.top-bar h1{
+  font-size:30px;
+  font-weight:800;
+  background:linear-gradient(90deg,#22c55e,#60a5fa,#a78bfa);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.logout{
+  background:linear-gradient(135deg,#ef4444,#dc2626);
+  color:white;
+  border:none;
+  padding:12px 22px;
+  border-radius:14px;
+  cursor:pointer;
+  transition:.4s;
+}
+
+.logout:hover{
+  transform:scale(1.08);
+  box-shadow:0 0 25px rgba(239,68,68,.8);
+}
+
+.cards{
+  margin-top:40px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:28px;
+}
+
+.card{
+  position:relative;
+  padding:28px;
+  border-radius:26px;
+  background:rgba(255,255,255,.12);
+  backdrop-filter:blur(22px);
+  box-shadow:0 25px 70px rgba(0,0,0,.6);
+  overflow:hidden;
+  transition:.5s;
+  animation:pop .8s ease forwards;
+}
+
+@keyframes pop{
+  from{opacity:0; transform:scale(.9)}
+  to{opacity:1; transform:scale(1)}
+}
+
+.card i{ font-size:38px; margin-bottom:10px; }
+.card h3{ font-size:34px; font-weight:800; }
+.card p{ opacity:.85; }
+
+.table-box{
+  margin-top:50px;
+  background:rgba(255,255,255,.12);
+  backdrop-filter:blur(22px);
+  padding:30px;
+  border-radius:26px;
+  box-shadow:0 30px 80px rgba(0,0,0,.6);
+}
+
+table{ width:100%; border-collapse:collapse; }
+th,td{ padding:14px; border-bottom:1px solid rgba(255,255,255,.15); }
+th{ background:rgba(255,255,255,.08); }
+tr:hover{ background:rgba(255,255,255,.12); }
+
+.site-footer{
+
+text-align:center;
+padding:15px;
+
+background:#020617;
+color:#94a3b8;
+
+font-size:14px;
+
+margin-top:40px;
+
+border-top:1px solid rgba(255,255,255,0.08);
+
+}
+</style>
+</head>
+<body>
+
+<div class="college-header">
+  <div class="college-center">
+    <img th:src="@{/assets/mit_logo.png}" alt="MIT Logo">
+    <div class="header-text">
+      <h1>MATOSHRI INSTITUTE OF TECHNOLOGY</h1>
+      <h2>(MIT POLYTECHNIC AND ENGINEERING)</h2>
+      <p>
+        Approved by AICTE & MSBTE, Mumbai | D.BATU Dhanore<br>
+        Dhanore, Yeola–Manmad Highway, Nashik – 423401<br>
+        <b>Contact:</b> +91 9699971035 / 9699983495 | <b>Email:</b> mityeola@gmail.com
+      </p>
+    </div>
+  </div>
+</div>
+<div id="lab3d"></div>
+<div class="wrapper">
+
+<div class="sidebar">
+  <h2>SILGIS</h2>
+ 
+  
+  <a><i class="fa-solid fa-volume-high"></i> Voice Lab Info</a>
+  <a><i class="fa-solid fa-cube"></i> 3D Architecture</a>
+  <a><i class="fa-solid fa-location-dot"></i> Location Tracker</a>
+  <a><i class="fa-solid fa-triangle-exclamation"></i>Feedback</a>
+  <a><i class="fa-solid fa-book"></i> Visitor Logs</a>
+  <a><i class="fa-solid fa-book"></i> Languages</a>
+</div>
+
+<div class="main">
+
+  <div class="top-bar">
+    <h1>Future Smart Dashboard</h1>
+    <button class="logout">Logout</button>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <i class="fa-solid fa-users"></i>
+      <h3 th:text="${totalVisitors}">128</h3>
+      <p>Total Visitors</p>
+    </div>
+    <div class="card">
+      <i class="fa-solid fa-flask"></i>
+      <h3>07</h3>
+      <p>Active Labs</p>
+    </div>
+    <div class="card">
+      <i class="fa-solid fa-right-to-bracket"></i>
+      <h3 th:text="${todayEntries}">253</h3>
+      <p>Today's Entries</p>
+    </div>
+  </div>
+
+  <div class="table-box">
+
+  <h2>Live Visitor Logs</h2>
+
+  <table style="text-align:center; width:100%;">
+
+  <tr>
+  <th style="text-align:center;">Name</th>
+  <th style="text-align:center;">Lab Name</th>
+  <th style="text-align:center;">Action</th>
+  <th style="text-align:center;">Time</th>
+  </tr>
+
+  <tbody>
+
+  <tr th:each="log : ${logs}">
+
+  <td style="text-align:center;" th:text="${log.visitorName}"></td>
+  
+  <td style="text-align:center;" th:text="${log.location}"></td>
+
+  <td style="text-align:center;" th:text="${log.action}"></td>
+
+  <td style="text-align:center;"
+  th:text="${#temporals.format(log.entryTime,'hh:mm a')}"></td>
+
+  </tr>
+
+  </tbody>
+
+  </table>
+
+  </div>
+  <!-- ================= NEW FEATURES ================= -->
+
+  <div class="analytics">
+
+  <h2 style="margin-bottom:20px;">Visitor Analytics</h2>
+
+  <canvas id="labChart"></canvas>
+
+  <br><br>
+
+  <canvas id="dailyChart"></canvas>
+
+  </div>
+
+
+  <div class="analytics">
+
+  <h2 style="margin-bottom:20px;">3D Lab Model</h2>
+
+  <div id="lab3d"></div>
+
+  </div>
+
+
+  <div class="analytics">
+
+  <h2 style="margin-bottom:20px;">Live Visitor Map</h2>
+
+  <div id="map"></div>
+
+  </div>
+
+  </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <script>
+
+	const ctx = document.getElementById("labChart").getContext("2d");
+
+	const gradient1 = ctx.createLinearGradient(0,0,0,400);
+	gradient1.addColorStop(0,"#22c55e");
+	gradient1.addColorStop(1,"#4ade80");
+
+	const gradient2 = ctx.createLinearGradient(0,0,0,400);
+	gradient2.addColorStop(0,"#3b82f6");
+	gradient2.addColorStop(1,"#60a5fa");
+
+	const gradient3 = ctx.createLinearGradient(0,0,0,400);
+	gradient3.addColorStop(0,"#8b5cf6");
+	gradient3.addColorStop(1,"#a78bfa");
+
+	const gradient4 = ctx.createLinearGradient(0,0,0,400);
+	gradient4.addColorStop(0,"#f59e0b");
+	gradient4.addColorStop(1,"#fbbf24");
+
+	const gradient5 = ctx.createLinearGradient(0,0,0,400);
+	gradient5.addColorStop(0,"#ec4899");
+	gradient5.addColorStop(1,"#f472b6");
+
+	const gradient6 = ctx.createLinearGradient(0,0,0,400);
+	gradient6.addColorStop(0,"#14b8a6");
+	gradient6.addColorStop(1,"#2dd4bf");
+
+	const gradient7 = ctx.createLinearGradient(0,0,0,400);
+	gradient7.addColorStop(0,"#ef4444");
+	gradient7.addColorStop(1,"#f87171");
+
+	new Chart(ctx,{
+
+	type:"bar",
+
+	data:{
+
+	labels:[
+	"Programming Lab",
+	"Networking Lab",
+	"Hardware Lab",
+	"Microprocessor Lab",
+	"Computer Center",
+	"Software Testing Lab",
+	"HOD Cabin"
+	],
+
+	datasets:[{
+
+	label:"Lab Visitors",
+
+	data:[18,12,9,15,20,11,5],
+
+	backgroundColor:[
+	gradient1,
+	gradient2,
+	gradient3,
+	gradient4,
+	gradient5,
+	gradient6,
+	gradient7
+	],
+
+	borderRadius:12,
+	borderSkipped:false
+
+	}]
+
+	},
+
+	options:{
+
+	responsive:true,
+
+	plugins:{
+
+	legend:{
+	display:false
+	},
+
+	tooltip:{
+	backgroundColor:"#111827",
+	titleColor:"#fff",
+	bodyColor:"#fff"
+	}
+
+	},
+
+	scales:{
+
+	x:{
+	ticks:{
+	color:"#e5e7eb"
+	},
+	grid:{
+	display:false
+	}
+	},
+
+	y:{
+	ticks:{
+	color:"#e5e7eb"
+	},
+	grid:{
+	color:"rgba(255,255,255,0.1)"
+	}
+	}
+
+	},
+
+	animation:{
+	duration:2000,
+	easing:"easeOutBounce"
+	}
+
+	}
+
+	});
+
+  /* ===== MAP ===== */
+
+  navigator.geolocation.getCurrentPosition(function(pos){
+
+  let lat=pos.coords.latitude;
+  let lon=pos.coords.longitude;
+
+  document.getElementById("map").innerHTML=
+  '<iframe width="100%" height="300" src="https://maps.google.com/maps?q='
+  +lat+','+lon+'&z=15&output=embed"></iframe>';
+
+  });
+
+  </script>
+  
+  <footer class="site-footer">
+  © 2026 Smart Interactive Lab Guide System
+  </footer>
+
+  </body>
+  </html>
+
+ 

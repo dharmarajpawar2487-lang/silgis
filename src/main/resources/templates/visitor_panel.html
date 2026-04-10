@@ -1,0 +1,2690 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+<meta charset="UTF-8">
+<title>SILGIS AI Smart Lab Tour</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="/assets/mit_logo.png">
+
+<link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/controls/OrbitControls.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
+  
+
+
+<style>
+	.college-header{
+	  position:sticky;
+	  top:0;
+	  z-index:999;
+	  background:#ffffffcc;
+	  backdrop-filter:blur(12px);
+	  padding:10px 40px;   /* spacing थोडी कमी */
+	  display:flex;
+	  justify-content:center;
+	  align-items:center;
+	  overflow:hidden;
+	  animation:fadeDown .8s ease forwards;
+	}
+
+	.college-center{
+	  display:flex;
+	  align-items:center;
+	  justify-content:center;
+	  gap:16px;   /* logo आणि text जवळ */
+	  width:100%;
+	  text-align:center;
+	}
+
+	.college-header::after{
+	  content:'';
+	  position:absolute;
+	  bottom:0;
+	  left:0;
+	  width:100%;
+	  height:4px;
+	  background:linear-gradient(90deg,#22c55e,#3b82f6,#8b5cf6,#22c55e);
+	  animation:flow 6s linear infinite;
+	}
+
+	.college-header::before{
+	  content:'';
+	  position:absolute;
+	  bottom:-60px;
+	  left:50%;
+	  transform:translateX(-50%);
+	  width:80%;
+	  height:120px;
+	  background:linear-gradient(90deg,#22c55e,#3b82f6,#8b5cf6);
+	  filter:blur(80px);
+	  opacity:.35;
+	}
+
+	@keyframes flow{
+	  0%{filter:hue-rotate(0deg)}
+	  100%{filter:hue-rotate(360deg)}
+	}
+
+	@keyframes fadeDown{
+	  from{opacity:0; transform:translateY(-25px)}
+	  to{opacity:1; transform:translateY(0)}
+	}
+
+	.college-header img{
+	  width:110px;   /* logo size */
+	  filter:drop-shadow(0 0 12px rgba(34,197,94,.6));
+	  animation:pulse 3s infinite;
+	}
+
+	@keyframes pulse{
+	  0%,100%{transform:scale(1)}
+	  50%{transform:scale(1.05)}
+	}
+
+	/* ===== TEXT AREA ===== */
+
+	.header-text{
+	  line-height:1.15;   /* 🔥 सर्व names जवळ */
+	}
+
+	.header-text h1{
+	  font-size:36px;
+	  font-weight:800;
+	  text-transform:uppercase;
+	  background:linear-gradient(90deg,#0b4f1f,#138a36,#0b4f1f);
+	  -webkit-background-clip:text;
+	  -webkit-text-fill-color:transparent;
+	  text-shadow:
+	  0px 2px 4px rgba(0,0,0,0.25),
+	  0px 4px 12px rgba(19,138,54,0.25);
+	  letter-spacing:1.2px;
+	  margin:2px 0;   /* 🔥 gap कमी */
+	}
+
+	.header-text h2{
+	  font-size:18px;
+	  font-weight:600;
+	  color:#0d2a4a;
+	  margin:2px 0;   /* 🔥 subtitle जवळ */
+	}
+
+	.header-text p{
+	  font-size:14px;
+	  color:#1f2937;
+	  margin:2px 0;   /* 🔥 address spacing */
+	}
+
+ 
+
+	/* ===== MOBILE RESPONSIVE ===== */
+
+	@media(max-width:768px){
+
+	  .college-center{
+	    flex-direction:column;
+	  }
+
+	  .college-header img{
+	    width:70px;
+	  }
+
+	  .header-text h1{
+	    font-size:22px;
+	  }
+
+	}
+
+
+	/* ===== LANGUAGE BAR (HEADER खाली) ===== */
+	.lang-switch{
+	width:100%;
+	display:flex;
+	justify-content:flex-end;
+	align-items:center;
+	padding:12px 40px;
+	background:#020617;
+	box-sizing:border-box;
+	border-top:1px solid rgba(255,255,255,0.08);
+	border-bottom:1px solid rgba(255,255,255,0.08);
+	}
+
+	.lang-switch button{
+
+	padding:8px 18px;
+	margin-left:12px;
+
+	background:#020617;
+	color:#ffffff;
+
+	border:1px solid rgba(255,255,255,0.2);
+	border-radius:8px;
+
+	font-weight:600;
+	letter-spacing:0.5px;
+
+	cursor:pointer;
+	transition:0.3s;
+	}
+
+	.lang-switch button:hover{
+
+	background:#22c55e;
+	color:white;
+	box-shadow:0 0 10px #22c55e;
+
+	}
+
+	.lang-switch button.active{
+
+	background:#22c55e;
+	color:black;
+	box-shadow:0 0 18px #22c55e;
+
+	}
+/* GLOBAL */
+
+body{
+margin:0;
+font-family:'Segoe UI';
+background:#000;
+color:white;
+overflow-x:hidden;
+}
+
+/* PARTICLES */
+
+#particles-js{
+position:fixed;
+width:100%;
+height:100%;
+top:0;
+left:0;
+z-index:-1;
+background:#000;
+}
+
+/* HEADER */
+
+header{
+
+padding:25px;
+font-size:36px;
+font-weight:800;
+text-align:center;
+
+background:linear-gradient(
+90deg,
+#22c55e,
+#3b82f6,
+#8b5cf6
+);
+
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+
+letter-spacing:2px;
+
+}
+ 
+
+/* IMPORTANT FIX */
+
+.lang-switch button{
+
+margin-left:8px;
+padding:8px 18px;
+
+background:#020617;
+
+color:#ffffff !important;
+
+border:1px solid rgba(255,255,255,0.2);
+
+border-radius:8px;
+
+font-weight:700;
+
+letter-spacing:1px;
+
+cursor:pointer;
+
+transition:0.3s;
+
+-webkit-text-fill-color:white !important;
+
+}
+
+/* ACTIVE BUTTON */
+
+.lang-switch button.active{
+
+background:#22c55e;
+
+color:black !important;
+
+box-shadow:0 0 18px #22c55e;
+
+}
+
+/* HOVER */
+
+.lang-switch button:hover{
+
+transform:scale(1.08);
+
+box-shadow:0 0 12px #22c55e;
+
+}
+
+/* CONTAINER */
+
+.container{
+width:92%;
+margin:auto;
+margin-top:30px;
+}
+
+/* CARDS */
+
+.section{
+
+background:rgba(5,5,15,0.85);
+
+backdrop-filter:blur(18px);
+
+border:1px solid rgba(255,255,255,0.05);
+
+border-radius:16px;
+
+padding:35px;
+
+box-shadow:0 0 20px rgba(0,0,0,0.8);
+
+margin-top:40px;
+
+transition:0.4s;
+}
+
+.section:hover{
+
+transform:translateY(-6px);
+
+box-shadow:0 0 30px #22c55e;
+
+}
+
+/* VIDEO */
+
+video{
+width:70%;
+border-radius:10px;
+box-shadow:0 0 20px black;
+display:block;
+margin:auto;
+}
+/* LAB INFO */
+
+.lab-info{
+display:flex;
+justify-content:center;
+gap:40px;
+flex-wrap:wrap;
+margin-top:20px;
+}
+
+.info-card{
+
+padding:18px;
+
+background:#020617;
+
+border-radius:12px;
+
+box-shadow:0 0 20px rgba(0,0,0,0.7);
+
+}
+
+/* 3D */
+
+#lab3d{
+height:420px;
+width:100%;
+display:flex;
+justify-content:center;
+align-items:center;
+margin:auto;
+}
+/* CHAT */
+.chat-box{
+
+background:#0f172a;
+
+height:260px;
+
+overflow-y:auto;
+
+padding:15px;
+
+border-radius:10px;
+
+margin-bottom:12px;
+
+display:flex;
+flex-direction:column;
+
+}
+
+.user-msg{
+
+align-self:flex-end;
+
+background:#22c55e;
+
+color:white;
+
+padding:8px 12px;
+
+border-radius:12px;
+
+margin:6px;
+
+max-width:60%;
+
+}
+
+.bot-msg{
+
+align-self:flex-start;
+
+background:#1e293b;
+
+color:white;
+
+padding:8px 12px;
+
+border-radius:12px;
+
+margin:6px;
+
+max-width:60%;
+
+}
+
+.chat-input-area{
+
+display:flex;
+gap:10px;
+
+}
+
+#userInput{
+
+flex:1;
+
+padding:10px;
+
+border-radius:8px;
+
+border:none;
+
+background:#020617;
+
+color:white;
+
+}
+
+.chat-input-area button{
+
+background:#22c55e;
+
+border:none;
+
+padding:10px 20px;
+
+border-radius:8px;
+
+color:white;
+
+cursor:pointer;
+
+transition:0.3s;
+
+}
+
+.chat-input-area button:hover{
+
+transform:scale(1.05);
+
+box-shadow:0 0 10px #22c55e;
+
+}
+
+.feedback-box{
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.feedback-box input,
+.feedback-box textarea,
+.feedback-box select{
+
+padding:10px;
+border-radius:8px;
+border:none;
+background:#020617;
+color:white;
+
+}
+
+.feedback-box button{
+
+background:#22c55e;
+border:none;
+padding:10px;
+border-radius:8px;
+cursor:pointer;
+
+}
+
+.feedback-item{
+
+background:#020617;
+padding:10px;
+border-radius:10px;
+margin-top:10px;
+
+}
+
+/* 👇 इथे add करायचा */
+@media(max-width:768px){
+
+.lang-switch{
+justify-content:center;
+padding:10px;
+}
+
+.lang-switch button{
+margin:6px;
+}
+
+}
+.lab-map{
+display:flex;
+flex-wrap:wrap;
+gap:20px;
+justify-content:center;
+margin-top:20px;
+}
+
+.lab-node{
+
+padding:15px 25px;
+background:#16a34a;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+transition:0.3s;
+}
+
+.lab-node:hover{
+
+transform:scale(1.05);
+box-shadow:0 0 10px #22c55e;
+
+}
+
+/* visited lab */
+
+.visited{
+
+background:red;
+
+}
+
+.site-footer{
+
+text-align:center;
+padding:15px;
+
+background:#020617;
+color:#94a3b8;
+
+font-size:14px;
+
+margin-top:40px;
+
+border-top:1px solid rgba(255,255,255,0.08);
+
+}
+
+.progress-bar{
+
+width:100%;
+height:20px;
+background:#020617;
+border-radius:10px;
+margin-top:10px;
+
+}
+
+#progressFill{
+
+height:100%;
+width:0%;
+background:#22c55e;
+border-radius:10px;
+transition:0.4s;
+
+}
+
+.lab-node{
+
+padding:15px 25px;
+background:#16a34a;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+transition:0.3s;
+
+}
+
+.lab-node.visited{
+background:red;
+box-shadow:0 0 10px red;
+}
+
+
+#certificateSection{
+
+background:#020617;
+border:2px solid #22c55e;
+border-radius:15px;
+padding:30px;
+margin-top:40px;
+box-shadow:0 0 20px rgba(34,197,94,0.4);
+
+}
+
+#certificateSection h2{
+
+font-size:28px;
+margin-bottom:15px;
+color:#22c55e;
+
+}
+
+#certificateSection button{
+
+background:#22c55e;
+border:none;
+padding:12px 25px;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+margin-top:15px;
+transition:0.3s;
+
+}
+
+#certificateSection button:hover{
+
+transform:scale(1.05);
+box-shadow:0 0 10px #22c55e;
+
+}
+
+ 
+</style>
+
+</head>
+<body>
+<div id="particles-js"></div>
+<div class="college-header">
+  <div class="college-center">
+	 <img th:src="@{/assets/mit_logo.png}" alt="MIT Logo">
+
+    <div class="header-text">
+
+      <h1>MATOSHRI INSTITUTE OF TECHNOLOGY</h1>
+
+      <h2>(MIT POLYTECHNIC AND ENGINEERING)</h2>
+
+      <p>
+        Approved by AICTE & MSBTE, Mumbai | D.BATU Dhanore<br>
+        Dhanore, Yeola–Manmad Highway, Nashik – 423401<br>
+        <b>Contact:</b> +91 9699971035 / 9699983495 |
+        <b>Email:</b> mityeola@gmail.com
+      </p>
+
+    </div>
+
+  </div>
+
+</div>
+
+ 
+<!-- LANGUAGE BAR -->
+
+<div class="lang-switch">
+
+<button id="btn-en" class="active" onclick="setLang('en')">ENGLISH</button>
+
+<button id="btn-hi" onclick="setLang('hi')">हिंदी</button>
+
+<button id="btn-mr" onclick="setLang('mr')">मराठी</button>
+
+</div>
+
+<header>
+
+SILGIS Smart Lab Access
+
+</header>
+
+<div class="container">
+
+<h2 th:text="${labName}"></h2>
+
+<span id="labName" th:text="${labName}" style="display:none;"></span>
+
+<!-- ===== NORMAL LABS ===== -->
+
+<div class="lab-info" th:if="${labName == 'Programming Lab'}">
+
+<div class="info-card">
+<i class="fa-solid fa-user"></i>
+<p><b>Lab Incharge</b><br>MR Pawar S.D.</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-building"></i>
+<p><b>Department</b><br>Computer Engineering</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-clock"></i>
+<p><b>Lab Timing</b><br>10:30 AM – 5:00 PM</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-phone"></i>
+<p><b>Contact</b><br>+91 9623695811</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-indian-rupee-sign"></i>
+<p><b>Lab Investment</b><br>₹4,31,500</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-ruler-combined"></i>
+<p><b>Lab Area</b><br>69.52 SQ.MT.</p>
+</div>
+
+</div>
+
+
+<div class="lab-info" th:if="${labName == 'Software Testing Lab'}">
+
+<div class="info-card">
+<i class="fa-solid fa-user"></i>
+<p><b>Lab Incharge</b><br>Miss Ghodke R.B.</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-building"></i>
+<p><b>Department</b><br>Computer Engineering</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-clock"></i>
+<p><b>Lab Timing</b><br>10:30 AM – 5:00 PM</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-phone"></i>
+<p><b>Contact</b><br>+91 9284182802</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-indian-rupee-sign"></i>
+<p><b>Lab Investment</b><br>₹4,32,000</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-ruler-combined"></i>
+<p><b>Lab Area</b><br>79.36 SQ.MT.</p>
+</div>
+
+
+ 
+</div>
+
+<div class="lab-info" th:if="${labName == 'Networking Lab'}">
+
+<div class="info-card">
+<i class="fa-solid fa-user"></i>
+<p><b>Lab Incharge</b><br>Bankar A.V.</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-building"></i>
+<p><b>Department</b><br>Computer Engineering</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-clock"></i>
+<p><b>Lab Timing</b><br>10:30 AM – 5:00 PM</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-phone"></i>
+<p><b>Contact</b><br>+91 9975667702</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-indian-rupee-sign"></i>
+<p><b>Lab Investment</b><br>₹4,45,500</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-ruler-combined"></i>
+<p><b>Lab Area</b><br>86.74 SQ.MT.</p>
+</div>
+
+
+</div>
+
+ 
+
+<div class="lab-info" th:if="${labName == 'Hardware Lab'}">
+
+<div class="info-card">
+<i class="fa-solid fa-user"></i>
+<p><b>Lab Incharge</b><br>MR Sonwane R.S.</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-building"></i>
+<p><b>Department</b><br>Computer Engineering</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-clock"></i>
+<p><b>Lab Timing</b><br>10:30 AM – 5:00 PM</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-phone"></i>
+<p><b>Contact</b><br>9373385803</p> 
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-indian-rupee-sign"></i>
+<p><b>Lab Investment</b><br>₹4,35,500</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-ruler-combined"></i>
+<p><b>Lab Area</b><br>69.04 SQ.MT.</p>
+</div>
+
+</div>
+
+
+<div class="lab-info" th:if="${labName == 'Computer Center Lab'}">
+
+<div class="info-card">
+<i class="fa-solid fa-user"></i>
+<p><b>Lab Incharge</b><br>MR Bhad S.A.</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-building"></i>
+<p><b>Department</b><br>Computer Engineering</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-clock"></i>
+<p><b>Lab Timing</b><br>10:30 AM – 5:00 PM</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-phone"></i>
+<p><b>Contact</b><br>9960356341</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-indian-rupee-sign"></i>
+<p><b>Lab Investment</b><br>₹5,61,000</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-ruler-combined"></i>
+<p><b>Lab Area</b><br>150.69 SQ.MT.</p>
+</div>
+
+</div>
+
+
+<div class="lab-info" th:if="${labName == 'Microprocessor Lab'}">
+
+<div class="info-card">
+<i class="fa-solid fa-user"></i>
+<p><b>Lab Incharge</b><br>MISS Khan M.R.</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-building"></i>
+<p><b>Department</b><br>Computer Engineering</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-clock"></i>
+<p><b>Lab Timing</b><br>10:30 AM – 5:00 PM</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-phone"></i>
+<p><b>Contact</b><br>8793790267</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-indian-rupee-sign"></i>
+<p><b>Lab Investment</b><br>₹5,61,000</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-ruler-combined"></i>
+<p><b>Lab Area</b><br>77.93 SQ.MT.</p>
+</div>
+
+</div>
+
+<!-- ===== HOD CABIN INFO ===== -->
+
+ 
+
+<div class="lab-info" th:if="${labName == 'HOD Cabin'}">
+
+<div class="info-card">
+<i class="fa-solid fa-user-tie"></i>
+<p><b>HOD Name</b><br>Ghorpade M.S.</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-building"></i>
+<p><b>Department</b><br>Computer Engineering</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-clock"></i>
+<p><b>Office Timing</b><br>10:30 AM – 5:00 PM</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-phone"></i>
+<p><b>Contact</b><br>+91 9970725846</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-indian-rupee-sign"></i>
+<p><b>Lab Investment</b><br>₹4,00,000</p>
+</div>
+
+<div class="info-card">
+<i class="fa-solid fa-ruler-combined"></i>
+<p><b>Lab Area</b><br>22.40 SQ.MT.</p>
+</div>
+
+
+</div>
+</div>
+
+<div class="section">
+<h3 id="labIntroTitle">Lab Introduction</h3>
+
+<video controls width="800">
+
+<source th:src="@{'/videos/' + ${videoFile} + '.mp4'}" type="video/mp4">
+
+</video>
+</div>
+
+<div class="section">
+
+<h3 id="tour3d">3D Lab Tour</h3>
+
+<div id="lab3d"></div>
+
+</div>
+
+<div class="section">
+
+<h3 id="voiceGuideTitle">Voice Guide</h3>
+
+<button onclick="speakLabIntro()">🎤 Start Guide</button>
+
+<p id="voiceText"></p>
+
+</div>
+
+<div class="section">
+
+<h3 id="aiAssistantTitle">AI Lab Assistant</h3>
+
+<div id="chatBox" class="chat-box"></div>
+
+<div class="chat-input-area">
+
+<input 
+type="text"
+id="userInput"
+placeholder="Ask about this lab...">
+
+<button id="sendBtn" onclick="sendMessage()">Send</button>
+
+<div class="voice-controls">
+
+<select id="voiceLang">
+<option value="en-US">English</option>
+<option value="hi-IN">Hindi</option>
+<option value="mr-IN">Marathi</option>
+</select>
+
+<button onclick="startVoice()">🎤 SpeaK</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="section">
+
+<h2 id="feedbackTitle">Visitor Feedback</h2>
+
+<div class="feedback-box">
+
+<input type="text" id="visitorName" placeholder="Your Name">
+
+<select id="rating">
+<option value="">Rate Lab</option>
+<option value="⭐">⭐</option>
+<option value="⭐⭐">⭐⭐</option>
+<option value="⭐⭐⭐">⭐⭐⭐</option>
+<option value="⭐⭐⭐⭐">⭐⭐⭐⭐</option>
+<option value="⭐⭐⭐⭐⭐">⭐⭐⭐⭐⭐</option>
+</select>
+
+<textarea id="feedbackText" placeholder="Write your feedback"></textarea>
+
+<button onclick="submitFeedback()">Submit Feedback</button>
+
+
+
+</div>
+
+<div id="feedbackList"></div>
+
+</div>
+
+
+<div class="section">
+
+<h2 id="visitMapTitle">Visit Map</h2>
+
+<div class="lab-map">
+
+<div class="lab-node" onclick="visitLab('Programming Lab')" id="Programming Lab">Programming Lab</div>
+
+<div class="lab-node" onclick="visitLab('Software Testing Lab')" id="Software Testing Lab">Software Testing</div>
+
+<div class="lab-node" onclick="visitLab('Networking Lab')" id="Networking Lab">Networking Lab</div>
+
+<div class="lab-node" onclick="visitLab('Microprocessor Lab')" id="Microprocessor Lab">Microprocessor Lab</div>
+
+<div class="lab-node" onclick="visitLab('Hardware Lab')" id="Hardware Lab">Hardware Lab</div>
+
+<div class="lab-node" onclick="visitLab('Computer Center Lab')" id="Computer Center Lab">Computer Center</div>
+
+<div class="lab-node" onclick="visitLab('HOD Cabin')" id="HOD Cabin">HOD Cabin</div>
+
+</div>
+
+</div>
+
+
+<div class="section">
+
+<h2 id="progressTitle">Visit Progress</h2>
+
+<div id="progressText">Visited Labs: 0 / 7</div>
+
+<div class="progress-bar">
+<div id="progressFill"></div>
+</div>
+
+</div>
+
+
+<div class="section">
+
+<h3 id="nextLabTitle">Next Suggested Lab</h3>
+
+<div id="nextLab"></div>
+
+</div>
+
+<div class="section" id="certificateSection" style="display:none; text-align:center;">
+
+<h2>🎓 Smart Lab Tour Certificate</h2>
+
+<p>
+You have successfully completed the SILGIS Smart Interactive Lab Guide Tour.
+</p>
+
+<button onclick="downloadCertificate()">Download Certificate</button>
+
+</div>
+
+
+<script>
+
+	
+	/* ================= GLOBAL LANGUAGE ================= */
+
+	particlesJS("particles-js",{
+	particles:{
+	number:{value:60},
+	color:{value:"#22c55e"},
+	shape:{type:"circle"},
+	opacity:{value:0.6},
+	size:{value:3},
+	move:{speed:1}
+	}
+	});
+
+	let currentLang = "en";
+
+	/* ================= MAIN UI TRANSLATION ================= */
+
+	const translations = {
+
+	en:{
+	labIntro:"Lab Introduction",
+	voiceGuide:"Voice Guide",
+	assistant:"AI Lab Assistant",
+	placeholder:"Ask about this lab...",
+	send:"Send"
+	},
+
+	hi:{
+	labIntro:"लैब परिचय",
+	voiceGuide:"वॉइस गाइड",
+	assistant:"एआई लैब सहायक",
+	placeholder:"इस लैब के बारे में पूछें...",
+	send:"भेजें"
+	},
+
+	mr:{
+	labIntro:"लॅब परिचय",
+	voiceGuide:"व्हॉइस मार्गदर्शक",
+	assistant:"एआय लॅब सहाय्यक",
+	placeholder:"या लॅब बद्दल विचारा...",
+	send:"पाठवा"
+	}
+
+	};
+
+	/* ================= EXTRA MULTILANGUAGE UI ================= */
+
+	const uiLang = {
+
+	en:{
+	feedback:"Visitor Feedback",
+	map:"Lab Visit Map",
+	progress:"Visit Progress",
+	nextLabTitle:"Next Suggested Lab",
+	visited:"Visited Labs",
+	allDone:"All Labs Completed 🎉",
+
+	certificateTitle:"CERTIFICATE OF COMPLETION",
+	presented:"This certificate is proudly presented to",
+	complete:"For successfully completing the",
+	tour:"SILGIS Smart Interactive Lab Guide Tour",
+	dept:"Department of Computer Engineering",
+	date:"Date",
+	auth:"Authorized Signatory"
+	},
+
+	hi:{
+	feedback:"आगंतुक प्रतिक्रिया",
+	map:"लैब विज़िट मैप",
+	progress:"विज़िट प्रगति",
+	nextLabTitle:"अगली सुझाई गई लैब",
+	visited:"देखी गई लैब",
+	allDone:"सभी लैब पूरी हो गई 🎉",
+
+	certificateTitle:"प्रमाण पत्र",
+	presented:"यह प्रमाण पत्र प्रदान किया जाता है",
+	complete:"सफलतापूर्वक पूरा करने के लिए",
+	tour:"SILGIS स्मार्ट इंटरएक्टिव लैब गाइड टूर",
+	dept:"कंप्यूटर इंजीनियरिंग विभाग",
+	date:"दिनांक",
+	auth:"अधिकृत हस्ताक्षर"
+	},
+
+	mr:{
+	feedback:"अभ्यागत अभिप्राय",
+	map:"लॅब भेट नकाशा",
+	progress:"भेट प्रगती",
+	nextLabTitle:"पुढील सुचवलेली लॅब",
+	visited:"भेट दिलेल्या लॅब",
+	allDone:"सर्व लॅब पूर्ण झाल्या 🎉",
+
+	certificateTitle:"प्रमाणपत्र",
+	presented:"हे प्रमाणपत्र प्रदान करण्यात येत आहे",
+	complete:"यशस्वीरित्या पूर्ण केल्याबद्दल",
+	tour:"SILGIS स्मार्ट इंटरएक्टिव्ह लॅब गाईड टूर",
+	dept:"कॉम्प्युटर अभियांत्रिकी विभाग",
+	date:"दिनांक",
+	auth:"अधिकृत स्वाक्षरी"
+	}
+
+	};
+
+	/* ================= LAB LIST ================= */
+
+	const labs = [
+	"Programming Lab",
+	"Software Testing Lab",
+	"Networking Lab",
+	"Microprocessor Lab",
+	"Hardware Lab",
+	"Computer Center Lab",
+	"HOD Cabin"
+	];
+
+	/* ================= LANGUAGE SWITCH ================= */
+
+	function setLang(lang){
+
+	currentLang = lang;
+
+	document.getElementById("btn-en").classList.remove("active");
+	document.getElementById("btn-hi").classList.remove("active");
+	document.getElementById("btn-mr").classList.remove("active");
+
+	document.getElementById("btn-"+lang).classList.add("active");
+
+	/* Voice language */
+
+	if(lang==="en") document.getElementById("voiceLang").value="en-US";
+	if(lang==="hi") document.getElementById("voiceLang").value="hi-IN";
+	if(lang==="mr") document.getElementById("voiceLang").value="mr-IN";
+
+	/* Header text */
+
+	document.getElementById("labIntroTitle").innerText = translations[lang].labIntro;
+	document.getElementById("voiceGuideTitle").innerText = translations[lang].voiceGuide;
+	document.getElementById("aiAssistantTitle").innerText = translations[lang].assistant;
+
+	document.getElementById("userInput").placeholder = translations[lang].placeholder;
+	document.getElementById("sendBtn").innerText = translations[lang].send;
+
+	/* Extra UI */
+
+	if(document.getElementById("feedbackTitle"))
+	document.getElementById("feedbackTitle").innerText = uiLang[lang].feedback;
+	
+	if(document.getElementById("visitMapTitle"))
+	document.getElementById("visitMapTitle").innerText = uiLang[lang].map;
+
+	if(document.getElementById("progressTitle"))
+	document.getElementById("progressTitle").innerText = uiLang[lang].progress;
+
+     if(document.getElementById("nextLabTitle"))
+	document.getElementById("nextLabTitle").innerText = uiLang[lang].nextLabTitle;
+
+	suggestNextLab();
+
+	}
+
+
+const currentLab = document.getElementById("labName")?.innerText;
+
+if(currentLab){
+
+let visited = JSON.parse(localStorage.getItem("visitedLabs")) || [];
+
+if(!visited.includes(currentLab)){
+visited.push(currentLab);
+}
+
+localStorage.setItem("visitedLabs", JSON.stringify(visited));
+
+updateMap();
+updateProgress();
+suggestNextLab();
+
+}
+
+
+
+ 
+ 
+/* ================= CHATBOT ================= */
+
+async function sendMessage(){
+
+let inputBox = document.getElementById("userInput");
+let text = inputBox.value.trim();
+
+if(text==="") return;
+
+let chatBox = document.getElementById("chatBox");
+
+/* USER MESSAGE */
+
+chatBox.innerHTML += `<div class="user-msg">${text}</div>`;
+
+/* BOT THINKING */
+
+let thinkingText = currentLang==="mr" ? "विचार करत आहे..." :
+                   currentLang==="hi" ? "सोच रहा है..." :
+                   "Thinking...";
+
+chatBox.innerHTML += `<div id="typing"><b>Bot:</b> ${thinkingText}</div>`;
+
+chatBox.scrollTop = chatBox.scrollHeight;
+
+
+/* ================= AI REQUEST ================= */
+
+try{
+
+let response = await fetch("/ai/ask",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body: JSON.stringify({
+question:text,
+lang:currentLang
+})
+
+});
+
+let data = await response.text();
+
+/* REMOVE THINKING */
+
+document.getElementById("typing").remove();
+
+/* BOT MESSAGE */
+
+chatBox.innerHTML += `<div class="bot-msg">${data}</div>`;
+
+ 
+
+/* VOICE RESPONSE */
+
+speak(data);
+
+}
+catch(e){
+
+document.getElementById("typing").remove();
+
+chatBox.innerHTML += `<div><b>Bot:</b> AI server error.</div>`;
+
+}
+
+inputBox.value="";
+
+chatBox.scrollTop = chatBox.scrollHeight;
+
+}
+
+
+/* ================= ENTER KEY SEND ================= */
+
+document.getElementById("userInput")
+.addEventListener("keydown",function(e){
+
+if(e.key==="Enter"){
+
+e.preventDefault();
+
+sendMessage();
+
+}
+
+});
+
+
+/* ================= VOICE QUESTION ================= */
+
+function startVoice(){
+
+const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+
+let lang = currentLang==="mr" ? "mr-IN" :
+           currentLang==="hi" ? "hi-IN" :
+           "en-US";
+
+recognition.lang = lang;
+
+recognition.start();
+
+recognition.onresult = function(event){
+
+const speechText = event.results[0][0].transcript;
+
+document.getElementById("userInput").value = speechText;
+
+sendMessage();
+
+};
+
+}
+ 
+
+
+/* ================= AI VOICE RESPONSE ================= */
+
+speechSynthesis.onvoiceschanged = function(){
+speechSynthesis.getVoices();
+};
+
+function speak(text){
+
+const speech = new SpeechSynthesisUtterance(text);
+let voices = speechSynthesis.getVoices();
+
+if(currentLang === "mr"){
+
+speech.lang = "hi-IN";
+speech.voice = voices.find(v => v.lang === "hi-IN");
+
+}
+else if(currentLang === "hi"){
+
+speech.lang = "hi-IN";
+speech.voice = voices.find(v => v.lang === "hi-IN");
+
+}
+else{
+
+speech.lang = "en-US";
+speech.voice = voices.find(v => v.lang === "en-US");
+
+}
+
+window.speechSynthesis.cancel();
+window.speechSynthesis.speak(speech);
+
+}
+
+
+
+function submitFeedback(){
+
+let name = document.getElementById("visitorName").value;
+let rating = document.getElementById("rating").value;
+let text = document.getElementById("feedbackText").value;
+
+if(name === "" || text === ""){
+alert("Please enter name and feedback");
+return;
+}
+
+/* save visitor name for certificate */
+localStorage.setItem("visitorName", name);
+
+let feedback = {
+name: name,
+rating: rating,
+text: text
+};
+
+let list = JSON.parse(localStorage.getItem("labFeedback")) || [];
+
+list.push(feedback);
+
+localStorage.setItem("labFeedback", JSON.stringify(list));
+
+loadFeedback();
+
+document.getElementById("visitorName").value="";
+document.getElementById("rating").value="";
+document.getElementById("feedbackText").value="";
+
+}
+
+
+function loadFeedback(){
+
+let list = JSON.parse(localStorage.getItem("labFeedback")) || [];
+
+let container = document.getElementById("feedbackList");
+
+container.innerHTML="";
+
+list.forEach(f=>{
+
+container.innerHTML += `
+<div class="feedback-item">
+<b>${f.name}</b> ${f.rating}
+<p>${f.text}</p>
+</div>
+`;
+
+});
+
+}
+
+window.addEventListener("load",loadFeedback);
+
+
+ 
+
+/* ================= RESET VISITOR SESSION ================= */
+
+function resetVisitorSession(){
+
+localStorage.removeItem("visitedLabs");
+
+/* map reset */
+
+document.querySelectorAll(".lab-node").forEach(el=>{
+el.classList.remove("visited");
+});
+
+/* progress reset */
+
+document.getElementById("progressFill").style.width="0%";
+
+/* hide certificate */
+
+let cert = document.getElementById("certificateSection");
+if(cert){
+cert.style.display="none";
+}
+
+}
+
+/* page load → reset */
+
+window.addEventListener("load",resetVisitorSession);
+
+
+/* ================= VISIT MAP ================= */
+
+function updateMap(){
+
+let visited = JSON.parse(localStorage.getItem("visitedLabs")) || [];
+
+visited.forEach(lab => {
+
+let el = document.getElementById(lab);
+
+if(el){
+el.classList.add("visited");
+}
+
+});
+
+}
+
+
+/* ================= VISIT LAB ================= */
+
+function visitLab(lab){
+
+let visited = JSON.parse(localStorage.getItem("visitedLabs")) || [];
+
+if(!visited.includes(lab)){
+visited.push(lab);
+}
+
+localStorage.setItem("visitedLabs", JSON.stringify(visited));
+
+updateProgress();
+updateMap();
+suggestNextLab();
+checkCertificate();
+
+}
+
+
+/* ================= PROGRESS ================= */
+
+function updateProgress(){
+
+let visited = JSON.parse(localStorage.getItem("visitedLabs")) || [];
+
+let total = 7;
+
+let percent = (visited.length / total) * 100;
+
+document.getElementById("progressText").innerText =
+uiLang[currentLang].visited + ": " + visited.length + " / " + total;
+
+document.getElementById("progressFill").style.width =
+percent + "%";
+
+}
+
+
+/* ================= NEXT LAB ================= */
+
+function suggestNextLab(){
+
+let visited = JSON.parse(localStorage.getItem("visitedLabs")) || [];
+
+let next = labs.find(l => !visited.includes(l));
+
+let text = "";
+
+if(next){
+
+if(currentLang === "hi"){
+text = "अगली लैब → " + next;
+}
+else if(currentLang === "mr"){
+text = "पुढील लॅब → " + next;
+}
+else{
+text = "Next Lab → " + next;
+}
+
+}
+else{
+
+text = uiLang[currentLang].allDone;
+
+}
+
+document.getElementById("nextLab").innerText = text;
+
+}
+
+
+/* ================= CERTIFICATE CHECK ================= */
+
+function checkCertificate(){
+
+let visited = JSON.parse(localStorage.getItem("visitedLabs")) || [];
+
+if(visited.length === 7){
+
+document.getElementById("certificateSection").style.display = "block";
+
+}
+
+}
+ 
+
+/* ================= SAVE VISITOR NAME ================= */
+
+function startVisit(){
+
+let name = document.getElementById("visitorNameInput").value;
+
+if(name.trim()===""){
+alert("Please enter your name");
+return;
+}
+
+/* SAVE NAME */
+
+localStorage.setItem("visitorName", name);
+
+alert("Welcome " + name + " ! Start your Lab Tour");
+
+}
+
+
+/* ================= DOWNLOAD CERTIFICATE ================= */
+
+function downloadCertificate(){
+
+const { jsPDF } = window.jspdf;
+
+let doc = new jsPDF("landscape","mm","a4");
+
+/* GET VISITOR NAME */
+
+let visitorName = localStorage.getItem("visitorName");
+
+if(!visitorName || visitorName.trim()===""){
+visitorName = "Visitor";
+}
+
+/* GET DATE */
+
+let date = new Date().toLocaleDateString();
+
+/* BACKGROUND */
+
+doc.setFillColor(0,0,0);
+doc.rect(0,0,297,210,"F");
+
+/* BORDER */
+
+doc.setDrawColor(34,197,94);
+doc.setLineWidth(3);
+doc.rect(10,10,277,190);
+
+/* LOGOS */
+
+let mitLogo = new Image();
+let nbaLogo = new Image();
+
+mitLogo.src="/assets/mit_logo.png";
+nbaLogo.src="/assets/nba_logo.png";
+
+/* MIT LOGO */
+
+mitLogo.onload=function(){
+
+doc.setFillColor(255,255,255);
+doc.roundedRect(20,25,26,26,6,6,"F");
+doc.addImage(mitLogo,"PNG",22,27,22,22);
+
+/* NBA LOGO */
+
+nbaLogo.onload=function(){
+
+doc.setFillColor(255,255,255);
+doc.roundedRect(251,25,26,26,6,6,"F");
+doc.addImage(nbaLogo,"PNG",253,27,22,22);
+
+/* INSTITUTE NAME */
+
+doc.setFont("times","bold");
+doc.setFontSize(28);
+doc.setTextColor(34,197,94);
+
+doc.text(
+"MATOSHRI INSTITUTE OF TECHNOLOGY",
+148,
+38,
+null,
+null,
+"center"
+);
+
+/* SUBTITLE */
+
+doc.setFontSize(16);
+doc.setTextColor(255,255,255);
+
+doc.text(
+"(MIT POLYTECHNIC AND ENGINEERING)",
+148,
+50,
+null,
+null,
+"center"
+);
+
+/* CERTIFICATE TITLE */
+
+doc.setFontSize(28);
+
+doc.text(
+"CERTIFICATE OF COMPLETION",
+148,
+80,
+null,
+null,
+"center"
+);
+
+/* PRESENTED TEXT */
+
+doc.setFontSize(16);
+
+doc.text(
+"This certificate is proudly presented to",
+148,
+100,
+null,
+null,
+"center"
+);
+
+/* VISITOR NAME */
+
+doc.setFontSize(32);
+doc.setTextColor(34,197,94);
+
+doc.text(
+visitorName,
+148,
+120,
+null,
+null,
+"center"
+);
+
+/* DESCRIPTION */
+
+doc.setFontSize(16);
+doc.setTextColor(255,255,255);
+
+doc.text(
+"For successfully completing the",
+148,
+140,
+null,
+null,
+"center"
+);
+
+doc.text(
+"SILGIS Smart Interactive Lab Guide Tour",
+148,
+150,
+null,
+null,
+"center"
+);
+
+/* DEPARTMENT */
+
+doc.text(
+"Department of Computer Engineering",
+148,
+165,
+null,
+null,
+"center"
+);
+
+/* AUTHORIZED */
+
+doc.setFontSize(14);
+
+doc.text(
+"Authorized Name",
+30,
+180
+);
+
+doc.setFontSize(16);
+
+doc.text(
+"Mr. Ghorpade M.S.",
+30,
+190
+);
+
+/* DATE */
+
+doc.setFontSize(14);
+
+doc.text(
+"Date: "+date,
+230,
+185
+);
+
+/* SAVE PDF */
+
+doc.save("MIT_SILGIS_Certificate.pdf");
+
+};
+
+};
+
+}
+/* ================= PAGE LOAD ================= */
+
+
+window.addEventListener("load", function(){
+
+updateProgress();
+updateMap();
+suggestNextLab();
+checkCertificate();
+
+});
+
+</script>
+
+ 
+
+
+ <script>
+	/* 3D LAB */
+/* ===================================== */
+/* ===== LAB NAME DETECT ===== */
+/* ===================================== */
+
+const lab = document.getElementById("labName").innerText;
+
+
+/* ===================================== */
+/* ===== 3D CONTAINER ===== */
+/* ===================================== */
+
+const container = document.getElementById("lab3d");
+
+
+/* ===================================== */
+/* ===== SCENE ===== */
+/* ===================================== */
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x020617);
+
+
+/* ===================================== */
+/* ===== CAMERA ===== */
+/* ===================================== */
+
+const camera = new THREE.PerspectiveCamera(
+75,
+container.clientWidth / container.clientHeight,
+0.1,
+1000
+);
+
+
+/* ===================================== */
+/* ===== RENDERER ===== */
+/* ===================================== */
+
+const renderer = new THREE.WebGLRenderer({
+antialias:true
+});
+
+renderer.setSize(
+container.clientWidth,
+container.clientHeight
+);
+
+renderer.shadowMap.enabled = true;
+
+container.appendChild(renderer.domElement);
+
+
+/* ===================================== */
+/* ===== CONTROLS ===== */
+/* ===================================== */
+
+const controls = new THREE.OrbitControls(
+camera,
+renderer.domElement
+);
+
+
+/* ===================================== */
+/* ===== LAB TYPE CHECK ===== */
+/* ===================================== */
+
+if(lab === "HOD Cabin"){
+
+createHodCabin();
+
+}else{
+
+createProgrammingLab();
+
+}
+
+
+/* ===================================== */
+/* ===== ANIMATION LOOP ===== */
+/* ===================================== */
+
+function animate(){
+
+requestAnimationFrame(animate);
+
+controls.update();
+
+renderer.render(scene,camera);
+
+}
+
+animate();
+
+/* ================================================= */
+/* ===== PROGRAMMING LAB 3D ===== */
+/* ================================================= */
+
+function createProgrammingLab(){
+
+/* ===== LIGHTING ===== */
+
+const light=new THREE.AmbientLight(0xffffff,1.5);
+scene.add(light);
+
+const mainLight = new THREE.PointLight(0xffffff,2);
+mainLight.position.set(0,10,0);
+scene.add(mainLight);
+
+
+/* ===== FLOOR ===== */
+
+const floor=new THREE.Mesh(
+new THREE.PlaneGeometry(40,40),
+new THREE.MeshStandardMaterial({
+color:0x1e293b,
+roughness:0.6,
+metalness:0.2
+})
+);
+
+floor.rotation.x=-Math.PI/2;
+scene.add(floor);
+
+
+/* ===== WALLS ===== */
+
+function createWall(x,y,z,width,height,depth){
+
+const wall=new THREE.Mesh(
+new THREE.BoxGeometry(width,height,depth),
+new THREE.MeshStandardMaterial({color:0xf1f5f9})
+);
+
+wall.position.set(x,y,z);
+scene.add(wall);
+
+}
+
+/* BACK WALL */
+
+createWall(0,5,-12,24,10,0.5);
+
+/* LEFT WALL */
+
+createWall(-12,5,0,0.5,10,24);
+
+/* RIGHT WALL */
+
+createWall(12,5,0,0.5,10,24);
+
+
+/* ===== CEILING ===== */
+
+const ceiling=new THREE.Mesh(
+new THREE.PlaneGeometry(40,40),
+new THREE.MeshStandardMaterial({color:0xffffff})
+);
+
+ceiling.rotation.x=Math.PI/2;
+ceiling.position.y=10;
+scene.add(ceiling);
+
+
+/* ===== WINDOWS ===== */
+
+function createWindow(x,y,z){
+
+const frame=new THREE.Mesh(
+new THREE.BoxGeometry(3,2,0.2),
+new THREE.MeshStandardMaterial({color:0x334155})
+);
+
+frame.position.set(x,y,z);
+scene.add(frame);
+
+const glass=new THREE.Mesh(
+new THREE.PlaneGeometry(2.6,1.6),
+new THREE.MeshStandardMaterial({
+color:0x60a5fa,
+transparent:true,
+opacity:0.6
+})
+);
+
+glass.position.set(x,y,z+0.11);
+scene.add(glass);
+
+}
+
+for(let i=-8;i<=8;i+=4){
+createWindow(-11,4,i);
+}
+
+
+/* ===== TUBE LIGHTS ===== */
+
+function createTubeLight(x,y,z){
+
+const tube=new THREE.Mesh(
+new THREE.BoxGeometry(4,0.2,0.2),
+new THREE.MeshStandardMaterial({color:0xffffff})
+);
+
+tube.position.set(x,y,z);
+scene.add(tube);
+
+const light=new THREE.PointLight(0xffffff,1.2,15);
+light.position.set(x,y,z);
+scene.add(light);
+
+}
+
+createTubeLight(0,9,0);
+createTubeLight(0,9,6);
+createTubeLight(0,9,-6);
+
+
+/* ===== TABLE + COMPUTER ===== */
+
+function createTable(x,z){
+
+const table=new THREE.Mesh(
+new THREE.BoxGeometry(3,0.2,1.2),
+new THREE.MeshStandardMaterial({color:0x8b5a2b})
+);
+
+table.position.set(x,1,z);
+scene.add(table);
+
+/* COMPUTER */
+
+const monitor=new THREE.Mesh(
+new THREE.BoxGeometry(0.8,0.5,0.1),
+new THREE.MeshStandardMaterial({color:0x111827})
+);
+
+monitor.position.set(x,1.4,z);
+scene.add(monitor);
+
+/* SCREEN */
+
+const screen=new THREE.Mesh(
+new THREE.PlaneGeometry(0.7,0.4),
+new THREE.MeshBasicMaterial({color:0x22c55e})
+);
+
+screen.position.set(x,1.4,z+0.06);
+scene.add(screen);
+
+}
+
+
+/* ===== CHAIR ===== */
+
+function createChair(x,z){
+
+const seat=new THREE.Mesh(
+new THREE.BoxGeometry(0.7,0.1,0.7),
+new THREE.MeshStandardMaterial({color:0x7f1d1d})
+);
+
+seat.position.set(x,0.6,z);
+scene.add(seat);
+
+const back=new THREE.Mesh(
+new THREE.BoxGeometry(0.7,0.8,0.1),
+new THREE.MeshStandardMaterial({color:0x991b1b})
+);
+
+back.position.set(x,1,z+0.3);
+scene.add(back);
+
+}
+
+
+/* ===== STUDENT ===== */
+
+function createStudent(x,z){
+
+const body=new THREE.Mesh(
+new THREE.BoxGeometry(0.5,1,0.5),
+new THREE.MeshStandardMaterial({color:0x2563eb})
+);
+
+body.position.set(x,1.2,z);
+scene.add(body);
+
+const head=new THREE.Mesh(
+new THREE.SphereGeometry(0.25,16,16),
+new THREE.MeshStandardMaterial({color:0xffcc99})
+);
+
+head.position.set(x,1.9,z);
+scene.add(head);
+
+}
+
+
+/* ===== LAB ROWS ===== */
+
+for(let i=-8;i<=8;i+=3){
+
+createTable(-6,i);
+createChair(-6,i+1);
+createStudent(-6,i+0.5);
+
+}
+
+for(let i=-8;i<=8;i+=3){
+
+createTable(6,i);
+createChair(6,i+1);
+createStudent(6,i+0.5);
+
+}
+
+
+/* ===== CONNECTING ROW ===== */
+
+for(let i=-3;i<=3;i+=3){
+
+createTable(i,-10);
+createChair(i,-9);
+createStudent(i,-9.5);
+
+}
+
+
+/* ===== CAMERA ===== */
+
+camera.position.set(0,6,15);
+camera.lookAt(0,0,0);
+
+animate();
+
+}
+/* ================================================= */
+/* =====  HOD CABIN */
+/* ================================================= */
+
+function createHodCabin(){
+
+/* ===== LIGHTING ===== */
+
+const ambient=new THREE.AmbientLight(0xffffff,0.6);
+scene.add(ambient);
+
+const light=new THREE.DirectionalLight(0xffffff,1);
+light.position.set(5,10,5);
+light.castShadow=true;
+scene.add(light);
+
+const glowLight=new THREE.PointLight(0x38bdf8,1.2,40);
+glowLight.position.set(0,6,0);
+scene.add(glowLight);
+
+
+/* ===== FLOOR ===== */
+
+const floor=new THREE.Mesh(
+new THREE.PlaneGeometry(40,40),
+new THREE.MeshStandardMaterial({
+color:0xe5e7eb,
+roughness:0.2,
+metalness:0.1
+})
+);
+
+floor.rotation.x=-Math.PI/2;
+floor.receiveShadow=true;
+scene.add(floor);
+
+
+/* ===== FUTURISTIC WALL MATERIAL ===== */
+
+const wallMaterial=new THREE.MeshStandardMaterial({
+color:0xf1f5f9,
+emissive:0x0ea5e9,
+emissiveIntensity:0.04,
+roughness:0.6
+});
+
+function createWall(x,y,z,w,h,d){
+
+const wall=new THREE.Mesh(
+new THREE.BoxGeometry(w,h,d),
+wallMaterial
+);
+
+wall.position.set(x,y,z);
+scene.add(wall);
+
+}
+
+
+/* ===== WALLS ===== */
+
+createWall(0,5,-12,24,10,0.5);
+createWall(-12,5,0,0.5,10,24);
+createWall(12,5,0,0.5,10,24);
+createWall(0,5,12,24,10,0.5);
+
+
+/* ===== DOOR (FRONT ENTRY) ===== */
+
+const door=new THREE.Mesh(
+
+new THREE.BoxGeometry(3,5,0.2),
+
+new THREE.MeshStandardMaterial({
+color:0x334155,
+metalness:0.6,
+roughness:0.2
+})
+
+);
+
+door.position.set(0,2.5,12);
+scene.add(door);
+
+
+/* ===== WINDOW ===== */
+
+const windowFrame=new THREE.Mesh(
+
+new THREE.BoxGeometry(6,2.5,0.2),
+
+new THREE.MeshStandardMaterial({color:0x64748b})
+
+);
+
+windowFrame.position.set(0,5,-11.8);
+scene.add(windowFrame);
+
+
+const glass=new THREE.Mesh(
+
+new THREE.PlaneGeometry(5.6,2.1),
+
+new THREE.MeshPhysicalMaterial({
+color:0x7dd3fc,
+transparent:true,
+opacity:0.4,
+reflectivity:1
+})
+
+);
+
+glass.position.set(0,5,-11.7);
+scene.add(glass);
+
+
+/* ===== CUPBOARD ===== */
+
+const cupboard=new THREE.Mesh(
+
+new THREE.BoxGeometry(10,2,1.5),
+
+new THREE.MeshStandardMaterial({color:0x9ca3af})
+
+);
+
+cupboard.position.set(0,1,-9);
+scene.add(cupboard);
+
+
+/* ===== TROPHIES ===== */
+
+function createTrophy(x,z){
+
+const base=new THREE.Mesh(
+new THREE.CylinderGeometry(0.2,0.2,0.2,16),
+new THREE.MeshStandardMaterial({color:0x8b5a2b})
+);
+
+base.position.set(x,2,z);
+scene.add(base);
+
+const cup=new THREE.Mesh(
+new THREE.ConeGeometry(0.3,0.6,16),
+new THREE.MeshStandardMaterial({color:0xffd700})
+);
+
+cup.position.set(x,2.4,z);
+scene.add(cup);
+
+}
+
+for(let i=-3;i<=3;i+=2){
+createTrophy(i,-9);
+}
+
+
+/* ===== HOD TABLE ===== */
+
+const table=new THREE.Mesh(
+
+new THREE.BoxGeometry(8,0.3,3),
+
+new THREE.MeshStandardMaterial({
+color:0x9ca3af,
+metalness:0.5,
+roughness:0.3
+})
+
+);
+
+table.position.set(0,1,0);
+table.castShadow=true;
+scene.add(table);
+
+
+/* ===== LAPTOP ===== */
+
+const laptop=new THREE.Mesh(
+
+new THREE.BoxGeometry(1.2,0.1,0.8),
+
+new THREE.MeshStandardMaterial({color:0x111827})
+
+);
+
+laptop.position.set(0,1.3,0);
+scene.add(laptop);
+
+
+/* ===== HOD CHAIR ===== */
+
+const hodChair=new THREE.Mesh(
+
+new THREE.BoxGeometry(1,1,1),
+
+new THREE.MeshStandardMaterial({color:0x1f2937})
+
+);
+
+hodChair.position.set(0,0.6,-1.8);
+scene.add(hodChair);
+
+
+/* ===== HOD PERSON ===== */
+
+const body=new THREE.Mesh(
+
+new THREE.BoxGeometry(0.8,1.2,0.6),
+
+new THREE.MeshStandardMaterial({color:0x2563eb})
+
+);
+
+body.position.set(0,1.4,-1.5);
+scene.add(body);
+
+const head=new THREE.Mesh(
+
+new THREE.SphereGeometry(0.35,16,16),
+
+new THREE.MeshStandardMaterial({color:0xffcc99})
+
+);
+
+head.position.set(0,2.2,-1.5);
+scene.add(head);
+
+
+/* ===== VISITOR CHAIRS ===== */
+
+function createChair(x,z,color){
+
+const seat=new THREE.Mesh(
+
+new THREE.BoxGeometry(0.8,0.1,0.8),
+
+new THREE.MeshStandardMaterial({color:color})
+
+);
+
+seat.position.set(x,0.6,z);
+scene.add(seat);
+
+const back=new THREE.Mesh(
+
+new THREE.BoxGeometry(0.8,0.8,0.1),
+
+new THREE.MeshStandardMaterial({color:color})
+
+);
+
+back.position.set(x,1,z+0.3);
+scene.add(back);
+
+}
+
+
+/* LEFT SIDE CHAIRS */
+
+for(let i=0;i<4;i++){
+createChair(-8,4-i*2,0x2563eb);
+}
+
+
+/* RIGHT SIDE CHAIRS */
+
+for(let i=0;i<4;i++){
+createChair(8,4-i*2,0x991b1b);
+}
+
+
+/* ===== PRINTER + PC ===== */
+
+const printerTable=new THREE.Mesh(
+
+new THREE.BoxGeometry(2,0.2,1),
+
+new THREE.MeshStandardMaterial({color:0x9ca3af})
+
+);
+
+printerTable.position.set(9,1,-3);
+scene.add(printerTable);
+
+
+const pc=new THREE.Mesh(
+
+new THREE.BoxGeometry(0.8,0.5,0.1),
+
+new THREE.MeshStandardMaterial({color:0x111827})
+
+);
+
+pc.position.set(9,1.4,-3);
+scene.add(pc);
+
+
+const printer=new THREE.Mesh(
+
+new THREE.BoxGeometry(0.6,0.4,0.6),
+
+new THREE.MeshStandardMaterial({color:0xe5e7eb})
+
+);
+
+printer.position.set(9.8,1.3,-3);
+scene.add(printer);
+
+
+/* ===== CAMERA ===== */
+
+camera.position.set(0,4,18);
+camera.lookAt(0,1,0);
+
+
+/* ===== ANIMATION ===== */
+
+function animate(){
+
+requestAnimationFrame(animate);
+
+controls.update();
+
+renderer.render(scene,camera);
+
+}
+
+animate();
+
+}
+/* ========================================= */
+/* ===== AI VOICE GUIDE ==================== */
+/* ========================================= */
+
+function speakLabIntro(){
+
+let lab = document.getElementById("labName").innerText;
+let lang = document.getElementById("voiceLang").value;
+
+let info = {};
+
+/* PROGRAMMING LAB */
+
+if(lab === "Programming Lab"){
+
+info = {
+
+en:"Welcome to Programming Lab. This laboratory is used for learning programming languages and coding practice. Students develop software programs and projects.",
+
+hi:"प्रोग्रामिंग लैब में आपका स्वागत है। यहाँ छात्र प्रोग्रामिंग भाषाएँ सीखते हैं और कोडिंग का अभ्यास करते हैं।",
+
+mr:"प्रोग्रामिंग लॅबमध्ये आपले स्वागत आहे. येथे विद्यार्थी प्रोग्रामिंग भाषा शिकतात आणि कोडिंगचा सराव करतात."
+
+};
+
+}
+
+/* MICROPROCESSOR LAB */
+
+else if(lab === "Microprocessor Lab"){
+
+info = {
+
+en:"The Microprocessor Laboratory is used to study microprocessors and microcontrollers including processor architecture and assembly programming.",
+
+hi:"माइक्रोप्रोसेसर लैब में छात्र माइक्रोप्रोसेसर और माइक्रोकंट्रोलर का अध्ययन करते हैं।",
+
+mr:"मायक्रोप्रोसेसर लॅबमध्ये विद्यार्थी मायक्रोप्रोसेसर आणि मायक्रोकंट्रोलरचा अभ्यास करतात."
+
+};
+
+}
+
+/* COMPUTER CENTER */
+
+else if(lab === "Computer Center Lab"){
+
+info = {
+
+en:"The Computer Center provides computing facilities with internet access for students and faculty.",
+
+hi:"कंप्यूटर सेंटर छात्रों और शिक्षकों को कंप्यूटिंग सुविधाएँ प्रदान करता है।",
+
+mr:"कॉम्प्युटर सेंटर विद्यार्थ्यांना संगणकीय सुविधा उपलब्ध करून देते."
+
+};
+
+}
+
+/* HARDWARE LAB */
+
+else if(lab === "Hardware Lab"){
+
+info = {
+
+en:"The Hardware Laboratory teaches students about computer components, assembling computers and troubleshooting hardware issues.",
+
+hi:"हार्डवेयर लैब में छात्र कंप्यूटर हार्डवेयर के बारे में सीखते हैं।",
+
+mr:"हार्डवेअर लॅबमध्ये विद्यार्थी संगणक हार्डवेअरबद्दल शिकतात."
+
+};
+
+}
+
+/* SOFTWARE TESTING LAB */
+
+else if(lab === "Software Testing Lab"){
+
+info = {
+
+en:"The Software Testing Laboratory teaches students how to test software applications using manual and automated testing techniques.",
+
+hi:"सॉफ्टवेयर टेस्टिंग लैब में छात्र सॉफ्टवेयर टेस्टिंग सीखते हैं।",
+
+mr:"सॉफ्टवेअर टेस्टिंग लॅबमध्ये विद्यार्थी सॉफ्टवेअर चाचणी शिकतात."
+
+};
+
+}
+
+/* NETWORKING LAB */
+
+else if(lab === "Networking Lab"){
+
+info = {
+
+en:"The Networking Laboratory provides practical knowledge about computer networks including IP addressing and routing.",
+
+hi:"नेटवर्किंग लैब में छात्र कंप्यूटर नेटवर्क के बारे में सीखते हैं।",
+
+mr:"नेटवर्किंग लॅबमध्ये विद्यार्थी संगणक नेटवर्क शिकतात."
+
+};
+
+}
+
+/* HOD CABIN */
+
+else if(lab === "HOD Cabin"){
+
+info = {
+
+en:"The Head of Department cabin is used for academic planning, meetings and student guidance.",
+
+hi:"एच ओ डी केबिन विभाग का प्रशासनिक कार्यालय है।",
+
+mr:"विभाग प्रमुखांचे केबिन हे विभागाचे प्रशासकीय कार्यालय आहे."
+
+};
+
+}
+
+let speech = new SpeechSynthesisUtterance(info[lang.split("-")[0]]);
+speech.lang = lang;
+
+window.speechSynthesis.speak(speech);
+
+}
+
+/* PAGE LOAD */
+
+window.addEventListener("load", function(){
+speakLabIntro();
+});
+ 
+</script>
+
+ 
+<footer class="site-footer">
+© 2026 SILGIS | Smart Interactive Lab Guide System
+</footer>
+
+</body>
+</html>

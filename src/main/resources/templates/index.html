@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SILGIS | Visitor Access</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root{
+  --green:#22c55e;
+  --text:#e5e7eb;
+  --glass:rgba(255,255,255,.08);
+  --border:rgba(255,255,255,.18);
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Inter',sans-serif;
+}
+
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(circle at top,#0f172a,#020617 60%),
+    linear-gradient(120deg,#020617,#000);
+  color:var(--text);
+}
+
+/* ================= HEADER ================= */
+.header{
+  position:sticky;
+  top:0;
+  z-index:999;
+  background:linear-gradient(180deg,rgba(2,6,23,.96),rgba(2,6,23,.88));
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(34,197,94,.35);
+  box-shadow:0 20px 60px rgba(0,0,0,.85);
+}
+
+/* HEADER LAYOUT */
+.header-inner{
+  max-width:1200px;
+  margin:auto;
+  padding:26px 20px 30px;
+  display:flex;
+  align-items:center;
+}
+
+/* LOGO LEFT */
+.logo{
+  flex:0 0 auto;
+}
+.logo img{
+  width:135px;
+  padding:8px;
+  background:rgba(255,255,255,.12);
+  border-radius:20px;
+  box-shadow:
+    0 0 28px rgba(34,197,94,.55),
+    0 0 60px rgba(34,197,94,.25);
+}
+
+/* CENTER TEXT */
+.header-text{
+  flex:1;
+  text-align:center;
+}
+
+/* TEXT STYLES */
+.society{
+  font-size:12px;
+  letter-spacing:1.6px;
+  opacity:.9;
+}
+
+.college{
+  margin-top:6px;
+  font-size:34px;
+  font-weight:900;
+  color:var(--green);
+}
+
+.sub{
+  margin-top:4px;
+  font-size:17px;
+  font-weight:700;
+}
+
+.desc{
+  margin-top:6px;
+  font-size:13px;
+  opacity:.9;
+}
+
+.contact{
+  margin-top:4px;
+  font-size:13px;
+  opacity:.9;
+}
+
+/* ================= MAIN CONTAINER ================= */
+.container{
+  width:960px;
+  margin:70px auto;
+  padding:44px;
+  background:var(--glass);
+  backdrop-filter:blur(28px);
+  border-radius:36px;
+  border:1px solid var(--border);
+  box-shadow:0 80px 160px rgba(0,0,0,.85);
+}
+
+.page-header{
+  text-align:center;
+  padding-bottom:32px;
+  border-bottom:1px solid rgba(255,255,255,.15);
+}
+
+.page-header h2{
+  font-size:20px;
+  opacity:.9;
+}
+
+/* ACCESS CARD */
+.access{
+  margin-top:54px;
+  display:flex;
+  justify-content:center;
+}
+
+.card{
+  width:460px;
+  padding:40px;
+  text-align:center;
+  background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.05));
+  backdrop-filter:blur(26px);
+  border-radius:30px;
+  border:1px solid rgba(255,255,255,.25);
+  box-shadow:0 50px 120px rgba(0,0,0,.8);
+}
+
+.card h3{
+  font-size:21px;
+  margin-bottom:26px;
+}
+
+input{
+  width:100%;
+  padding:16px;
+  border-radius:16px;
+  border:none;
+  font-size:15px;
+  margin-bottom:24px;
+}
+
+.btn{
+  width:100%;
+  padding:16px;
+  border-radius:16px;
+  border:none;
+  background:linear-gradient(135deg,#020617,#0f172a);
+  color:#e5e7eb;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.footer{
+  margin-top:26px;
+  font-size:13px;
+  opacity:.9;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+  .header-inner{
+    flex-direction:column;
+    gap:14px;
+  }
+  .header-text{
+    text-align:center;
+  }
+  .college{font-size:24px}
+  .container{
+    width:94%;
+    padding:30px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="header-inner">
+
+    <!-- LEFT LOGO -->
+    <div class="logo">
+      <img src="/assets/mit_logo.png" alt="MIT Logo">
+    </div>
+
+    <!-- CENTER TEXT -->
+    <div class="header-text">
+      <div class="society">MATOSHRI EDUCATION SOCIETY'S</div>
+      <div class="college">MATOSHRI INSTITUTE OF TECHNOLOGY</div>
+      <div class="sub">( MIT POLYTECHNIC AND ENGINEERING )</div>
+      <div class="desc">Approved by AICTE & Affiliated to MSBTE, Mumbai</div>
+      <div class="contact">MSBTE: 1171 | DTE: 5263 | EMAIL: mityeola@gmail.com</div>
+      <div class="contact">
+        At Post: Dhanore, Yeola–Manmad Highway, Yeola, Nashik – 423401
+      </div>
+    </div>
+
+  </div>
+</header>
+
+<div class="container">
+  <div class="page-header">
+    <h2>Secure Visitor Access</h2>
+    <h2>SILGIS – Smart Identification System</h2>
+  </div>
+
+  <div class="access">
+    <div class="card">
+      <h3>Enter Secure Visitor ID</h3>
+      <form action="/validate" method="post">
+        <input name="visitorId" placeholder="Secure Visitor ID" required>
+        <button class="btn">
+          <i class="fa-solid fa-shield-halved"></i> Verify & Activate
+        </button>
+      </form>
+      <div class="footer">
+        Smart IoT Lab | MIT Yeola 🔐
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
+

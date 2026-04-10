@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"/><title>Location</title><link rel="stylesheet" href="/static/css/styles.css"/></head>
+<body>
+<div class="center"><div class="card">
+  <h2>Campus Map & Location</h2>
+  <img src="/static/assets/campus_map.png" style="width:100%;max-width:640px"/>
+  <p id="pos">Position: unknown</p>
+  <button class="btn" onclick="getPos()">Get Position</button>
+</div></div>
+<script>
+(async ()=>{ const s=await fetch('/api/system/status').then(r=>r.text()); if(s!=='ACTIVE'){alert('System OFF'); window.location.href='/';}})();
+function getPos(){
+  if(navigator.geolocation) navigator.geolocation.getCurrentPosition(p=> document.getElementById('pos').innerText = `Lat:${p.coords.latitude.toFixed(5)} Lon:${p.coords.longitude.toFixed(5)}`);
+  else document.getElementById('pos').innerText='Geolocation not supported';
+}
+</script>
+</body>
+</html>

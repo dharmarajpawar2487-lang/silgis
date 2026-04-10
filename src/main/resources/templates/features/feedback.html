@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"/><title>Feedback</title><link rel="stylesheet" href="/static/css/styles.css"/></head>
+<body>
+<div class="center"><div class="card">
+  <h2>Feedback</h2>
+  <textarea id="msg" rows="5" placeholder="Write feedback"></textarea>
+  <select id="rating"><option value="5">5 Excellent</option><option value="4">4 Good</option><option value="3">3 Average</option><option value="2">2 Poor</option><option value="1">1 Bad</option></select>
+  <button id="send" class="btn">Send</button>
+  <p id="st"></p>
+</div></div>
+<script>
+(async ()=>{ const s=await fetch('/api/system/status').then(r=>r.text()); if(s!=='ACTIVE'){alert('System OFF'); window.location.href='/';}})();
+document.getElementById('send').onclick = async ()=>{
+  const message = document.getElementById('msg').value;
+  const rating = parseInt(document.getElementById('rating').value);
+  const fd = new URLSearchParams(); fd.append('message', message); fd.append('rating', rating);
+  const res = await fetch('/feature/feedback/submit', {method:'POST', body: fd});
+  document.getElementById('st').innerText = await res.text();
+};
+</script>
+</body>
+</html>

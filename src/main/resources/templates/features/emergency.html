@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"/><title>Emergency</title><link rel="stylesheet" href="/static/css/styles.css"/></head>
+<body>
+<div class="center"><div class="card">
+  <h2>Emergency Alert</h2>
+  <p>Press the button to simulate emergency alert (admins notified).</p>
+  <button id="alertBtn" class="btn">Trigger Emergency</button>
+  <p id="res"></p>
+</div></div>
+<script>
+(async ()=>{ const s=await fetch('/api/system/status').then(r=>r.text()); if(s!=='ACTIVE'){alert('System OFF'); window.location.href='/';}})();
+document.getElementById('alertBtn').onclick = async ()=>{
+  // for demo just log locally — in production call a notification API
+  document.getElementById('res').innerText = 'Emergency triggered — admin notified (demo).';
+  alert('Emergency: Demo notification sent.');
+};
+</script>
+</body>
+</html>

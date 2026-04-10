@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+<meta charset="UTF-8">
+<title>SILGIS Smart Lab Access</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+
+<style>
+
+/* ===== PARTICLE BACKGROUND ===== */
+
+#particles-js{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+z-index:-1;
+}
+
+/* ================= COLLEGE HEADER ================= */
+
+.college-header{
+position:sticky;
+top:0;
+z-index:999;
+background:#ffffffcc;
+backdrop-filter:blur(12px);
+padding:10px 40px;
+display:flex;
+justify-content:center;
+align-items:center;
+overflow:hidden;
+animation:fadeDown .8s ease forwards;
+}
+
+.college-center{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:16px;
+width:100%;
+text-align:center;
+}
+
+.college-header img{
+width:110px;
+filter:drop-shadow(0 0 12px rgba(34,197,94,.6));
+animation:pulse 3s infinite;
+}
+
+@keyframes pulse{
+0%,100%{transform:scale(1)}
+50%{transform:scale(1.05)}
+}
+
+.header-text{
+line-height:1.15;
+}
+
+.header-text h1{
+font-size:36px;
+font-weight:800;
+text-transform:uppercase;
+background:linear-gradient(90deg,#0b4f1f,#138a36,#0b4f1f);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+margin:2px 0;
+}
+
+.header-text h2{
+font-size:18px;
+font-weight:600;
+color:#0d2a4a;
+margin:2px 0;
+}
+
+.header-text p{
+font-size:14px;
+color:#1f2937;
+margin:2px 0;
+}
+
+/* ================= GLOBAL ================= */
+
+body{
+margin:0;
+font-family:'Segoe UI';
+background:
+radial-gradient(circle at 30% 30%,rgba(34,197,94,.25),transparent 40%),
+radial-gradient(circle at 80% 70%,rgba(59,130,246,.2),transparent 40%),
+linear-gradient(135deg,#020617,#000000);
+color:white;
+text-align:center;
+}
+
+/* ================= SILGIS HEADER ================= */
+
+header{
+font-size:36px;
+font-weight:800;
+padding:25px;
+
+background:linear-gradient(90deg,#22c55e,#3b82f6,#8b5cf6);
+
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+
+letter-spacing:2px;
+
+animation:glowText 4s infinite alternate;
+}
+
+@keyframes glowText{
+
+0%{filter:drop-shadow(0 0 10px #22c55e)}
+100%{filter:drop-shadow(0 0 25px #3b82f6)}
+
+}
+
+/* ================= CONTAINER ================= */
+
+.container{
+
+margin-top:80px;
+
+background:rgba(255,255,255,0.08);
+
+backdrop-filter:blur(20px);
+
+padding:45px;
+
+width:430px;
+
+margin-left:auto;
+margin-right:auto;
+
+border-radius:20px;
+
+border:1px solid rgba(255,255,255,0.15);
+
+box-shadow:
+0 0 40px rgba(0,0,0,.8),
+0 0 25px rgba(34,197,94,.3);
+
+transition:.4s;
+
+animation:fadeUp .8s ease;
+
+}
+
+@keyframes fadeUp{
+
+from{
+opacity:0;
+transform:translateY(40px);
+}
+
+to{
+opacity:1;
+transform:translateY(0);
+}
+
+}
+
+.container:hover{
+
+transform:translateY(-8px);
+
+box-shadow:
+0 0 50px rgba(34,197,94,.5);
+
+}
+
+/* ================= INPUT ================= */
+
+input{
+
+width:85%;
+padding:14px;
+
+margin:12px 0;
+
+border-radius:10px;
+
+border:none;
+
+background:#020617;
+
+color:white;
+
+font-size:15px;
+
+outline:none;
+
+transition:.3s;
+
+box-shadow:0 0 10px rgba(0,0,0,0.6);
+
+}
+
+input:focus{
+
+box-shadow:
+0 0 15px #22c55e,
+0 0 30px rgba(34,197,94,.6);
+
+}
+
+/* ================= BUTTON ================= */
+
+button{
+
+padding:14px 35px;
+
+border:none;
+
+border-radius:10px;
+
+background:linear-gradient(90deg,#22c55e,#3b82f6);
+
+color:white;
+
+font-weight:700;
+
+cursor:pointer;
+
+transition:.3s;
+
+letter-spacing:1px;
+
+}
+
+button:hover{
+
+transform:scale(1.08);
+
+box-shadow:
+0 0 15px #22c55e,
+0 0 25px #3b82f6;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="particles-js"></div>
+
+<!-- ===== COLLEGE HEADER ===== -->
+
+<div class="college-header">
+<div class="college-center">
+
+<img th:src="@{/assets/mit_logo.png}" alt="MIT Logo">
+
+<div class="header-text">
+
+<h1>MATOSHRI INSTITUTE OF TECHNOLOGY</h1>
+
+<h2>(MIT POLYTECHNIC AND ENGINEERING)</h2>
+
+<p>
+Approved by AICTE & MSBTE, Mumbai | D.BATU Dhanore<br>
+Dhanore, Yeola–Manmad Highway, Nashik – 423401<br>
+<b>Contact:</b> +91 9699971035 / 9699983495 |
+<b>Email:</b> mityeola@gmail.com
+</p>
+
+</div>
+
+</div>
+</div>
+
+<header>
+
+SILGIS Smart Lab Access
+
+</header>
+
+<div class="container">
+
+<h2>Enter Visitor Name</h2>
+
+<form action="/api/entry/activate" method="post" onsubmit="saveVisitorName()">
+
+<input type="hidden"
+name="labName"
+th:value="${labName}">
+
+<input type="text"
+id="visitorNameInput"
+name="visitorName"
+placeholder="Enter Your Name"
+required>
+
+<br>
+
+<button type="submit">
+Enter Lab
+</button>
+
+</form>
+
+</div>
+
+<script>
+
+/* ================= SAVE VISITOR NAME ================= */
+
+function saveVisitorName(){
+
+let name = document.getElementById("visitorNameInput").value;
+
+/* visitor name localStorage मध्ये save */
+
+localStorage.setItem("visitorName", name);
+
+console.log("Visitor Saved:", name);
+
+}
+
+
+/* ================= PARTICLES BACKGROUND ================= */
+
+particlesJS("particles-js",{
+
+particles:{
+number:{value:70},
+color:{value:"#22c55e"},
+shape:{type:"circle"},
+opacity:{value:0.6},
+size:{value:3},
+move:{speed:1}
+}
+
+});
+
+</script>
+
+</body>
+</html>

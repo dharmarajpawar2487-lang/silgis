@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"/><title>3D Lab</title><link rel="stylesheet" href="/static/css/styles.css"/><script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script></head>
+<body>
+<div class="center"><div class="card">
+  <h2>3D Architecture</h2>
+  <div id="three" style="width:640px;height:360px;"></div>
+  <p>Placeholder 3D — replace with GLTF model as required.</p>
+</div></div>
+<script>
+(async ()=>{ const s=await fetch('/api/system/status').then(r=>r.text()); if(s!=='ACTIVE'){alert('System OFF'); window.location.href='/';}})();
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75,640/360,0.1,1000);
+const renderer = new THREE.WebGLRenderer(); renderer.setSize(640,360);
+document.getElementById('three').appendChild(renderer.domElement);
+const geom = new THREE.BoxGeometry(); const mat = new THREE.MeshNormalMaterial();
+const mesh = new THREE.Mesh(geom, mat); scene.add(mesh); camera.position.z=3;
+function animate(){ requestAnimationFrame(animate); mesh.rotation.x+=0.01; mesh.rotation.y+=0.01; renderer.render(scene,camera); }
+animate();
+</script>
+</body>
+</html>
+ 

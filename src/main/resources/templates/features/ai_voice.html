@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"/><title>Voice AI</title><link rel="stylesheet" href="/static/css/styles.css"/></head>
+<body>
+<div class="center"><div class="card">
+  <h2>Voice-Based Lab Info</h2>
+  <button id="start" class="btn">Start Voice</button>
+  <p id="out"></p>
+</div></div>
+<script>
+(async ()=>{ const s=await fetch('/api/system/status').then(r=>r.text()); if(s!=='ACTIVE'){alert('System OFF'); window.location.href='/';}})();
+const qna = {"computer lab":"Computer Lab: systems and networking.","physics lab":"Physics Lab: mechanics and optics."};
+document.getElementById('start').onclick = ()=>{
+  const R = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!R) return alert('Speech API not supported');
+  const r = new R(); r.lang='en-US';
+  r.onresult = e => {
+    const t = e.results[0][0].transcript.toLowerCase();
+    let a = "Info not found.";
+    for(const k in qna) if(t.includes(k)) a = qna[k];
+    document.getElementById('out').innerText = a;
+    speechSynthesis.speak(new SpeechSynthesisUtterance(a));
+  };
+  r.start();
+};
+</script>
+</body>
+</html>

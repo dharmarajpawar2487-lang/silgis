@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>QR Access</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+
+<body style="background:#0a142f;color:white;text-align:center">
+
+<h2>Scan Visitor QR</h2>
+
+<div id="reader" style="width:300px;margin:auto;"></div>
+<p id="result"></p>
+
+<script>
+
+function onScanSuccess(decodedText) {
+
+    document.getElementById("result").innerHTML =
+        "Scanned ID: " + decodedText;
+
+    fetch('/api/entry/activate?visitorId=' + decodedText, {
+        method: 'POST'
+    })
+    .then(response => response.text())
+    .then(data => {
+        alert("Server Response: " + data);
+    });
+
+}
+
+new Html5QrcodeScanner("reader", {
+    fps: 10,
+    qrbox: 250
+}).render(onScanSuccess);
+
+</script>
+
+</body>
+</html>
